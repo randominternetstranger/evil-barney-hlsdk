@@ -1,0 +1,33 @@
+name: Build Evil Barney
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Install build tools
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential gcc-multilib g++-multilib unzip
+
+    - name: Unzip SDK
+      run: unzip hlsdk-portable-master.zip -d sdk
+
+    - name: Build hl.so
+      working-directory: sdk/dlls
+      run: |
+        make -f Makefile.linux
+
+    - name: Upload build result
+      uses: actions/upload-artifact@v3
+      with:
+        name: hlso
+        path: sdk/dlls/hl.so
