@@ -10,24 +10,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
+    - name: Checkout repo
       uses: actions/checkout@v4
 
-    - name: Install build tools
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y build-essential gcc-multilib g++-multilib unzip
+    - name: Install deps
+      run: sudo apt-get update && sudo apt-get install -y build-essential cmake unzip wget
 
-    - name: Unzip SDK
+    - name: Download HLSDK
+      run: wget https://github.com/FWGS/hlsdk-portable/archive/refs/heads/master.zip -O hlsdk-portable-master.zip
+
+    - name: Unzip HLSDK
       run: unzip hlsdk-portable-master.zip -d sdk
 
-    - name: Build hl.so
-      working-directory: sdk/dlls
-      run: |
-        make -f Makefile.linux
+    - name: Configure CMake
+      run: cmake -S sdk/hlsdk-portable-master -B build
 
-    - name: Upload build result
+    - name: Build
+      run: cmake --build build --config Release
+
+    - name: Upload build artifact
       uses: actions/upload-artifact@v4
       with:
         name: hlso
-        path: sdk/dlls/hl.so
+        path: build/
