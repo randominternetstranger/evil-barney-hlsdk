@@ -1,8 +1,6 @@
 name: Build Evil Barney
 
 on:
-  push:
-    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
@@ -10,26 +8,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v3
 
-    - name: Install deps
-      run: sudo apt-get update && sudo apt-get install -y build-essential cmake unzip wget
+      - name: Set up CMake
+        uses: lukka/get-cmake@latest
 
-    - name: Download HLSDK
-      run: wget https://github.com/FWGS/hlsdk-portable/archive/refs/heads/master.zip -O hlsdk-portable-master.zip
+      - name: Unzip SDK
+        run: unzip hlsdk-portable-master.zip -d sdk
 
-    - name: Unzip HLSDK
-      run: unzip hlsdk-portable-master.zip -d sdk
+      - name: Configure CMake
+        run: cmake -S sdk/hlsdk-portable-master -B build \
+          -DXASH_LINUX=ON \
+          -DXASH_X86=ON \
+          -DCMAKE_BUILD_TYPE=Release
 
-    - name: Configure CMake
-      run: cmake -S sdk/hlsdk-portable-master -B build
+      - name: Build
+        run: cmake --build build --config Release -j4
 
-    - name: Build
-      run: cmake --build build --config Release
-
-    - name: Upload build artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: hlso
-        path: build/
+      - name: Upload .so file
+        uses: actions/upload-artifact@v3
+        with:
+          name: hl-so
+          path: build/dlls/hl.so
