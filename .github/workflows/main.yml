@@ -11,8 +11,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Set up CMake
-        uses: lukka/get-cmake@latest
+      - name: Install unzip
+        run: sudo apt-get update && sudo apt-get install -y unzip
 
       - name: Unzip SDK
         run: unzip hlsdk-portable-master.zip -d sdk
