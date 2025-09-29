@@ -11,7 +11,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Install build tools
       run: |
@@ -27,7 +27,7 @@ jobs:
         make -f Makefile.linux
 
     - name: Upload build result
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: hlso
         path: sdk/dlls/hl.so
